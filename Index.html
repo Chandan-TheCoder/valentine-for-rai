@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For Rai</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Montserrat:wght@300;500&display=swap');
+
+        :root {
+            --rose-color: #ff3366;
+            --stem-color: #2d5a27;
+            --bg-color: #0a0a0a;
+            --text-gold: #ffd700;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: 'Montserrat', sans-serif;
+            color: white;
+        }
+
+        /* Canvas for the Particle Garden */
+        #garden-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Main Container */
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+            width: 90%;
+            max-width: 800px;
+            pointer-events: none; /* Let clicks pass through to buttons */
+        }
+
+        /* Typography */
+        h1 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 4rem;
+            margin-bottom: 10px;
+            color: var(--rose-color);
+            text-shadow: 0 0 20px rgba(255, 51, 102, 0.8);
+            opacity: 0;
+            animation: fadeIn 2s ease-out forwards 1s;
+        }
+
+        p.message {
+            font-size: 1.5rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #eee;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            opacity: 0;
+            animation: slideUp 2s ease-out forwards 2s;
+        }
+
+        .highlight {
+            color: var(--text-gold);
+            font-weight: bold;
+        }
+
+        /* The Rose Container */
+        .rose-wrapper {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+            position: relative;
+            opacity: 0;
+            animation: zoomIn 2s ease-out forwards 0.5s;
+        }
+
+        /* CSS Drawn Rose */
+        .flower {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .petal {
+            position: absolute;
+            background: var(--rose-color);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+        }
+
+        .p1 { width: 50px; height: 50px; top: 50px; left: 50px; z-index: 2; animation: bloom 3s infinite alternate; }
+        .p2 { width: 60px; height: 60px; top: 45px; left: 45px; z-index: 1; opacity: 0.8; animation: bloom 3.2s infinite alternate-reverse; }
+        .p3 { width: 40px; height: 40px; top: 55px; left: 55px; z-index: 3; background: #ff6688; animation: bloom 2.8s infinite alternate; }
+        
+        @keyframes bloom {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1) rotate(5deg); }
+        }
+
+        /* Interactive Buttons */
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            pointer-events: auto;
+            opacity: 0;
+            animation: fadeIn 2s ease-out forwards 3s;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Montserrat', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-yes {
+            background: linear-gradient(45deg, #ff3366, #ff6b81);
+            color: white;
+        }
+
+        .btn-yes:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 30px rgba(255, 51, 102, 0.8);
+        }
+
+        .btn-no {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+            position: relative;
+        }
+
+        /* Success Overlay */
+        #success-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 51, 102, 0.95);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #success-overlay h2 {
+            font-family: 'Dancing Script', cursive;
+            font-size: 5rem;
+            color: white;
+            margin: 0;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { transform: scale(0); } to { opacity: 1; transform: scale(1); } }
+
+    </style>
+</head>
+<body>
+
+    <canvas id="garden-canvas"></canvas>
+
+    <div class="container">
+        <div class="rose-wrapper">
+            <div class="flower">
+                <div class="petal p1"></div>
+                <div class="petal p2"></div>
+                <div class="petal p3"></div>
+            </div>
+        </div>
+
+        <h1>Cutie Rai,</h1>
+        
+        <p class="message">
+            Will you be my Valentine forever?<br>
+            Will you be the most <span class="highlight">beautiful rose</span> in the garden of my heart?
+        </p>
+
+        <div class="buttons">
+            <button class="btn btn-yes" onclick="handleYes()">YES, I Will!</button>
+            <button class="btn btn-no" id="noBtn" onmouseover="moveButton()">No</button>
+        </div>
+    </div>
+
+    <div id="success-overlay">
+        <h2>She Said Yes!</h2>
+        <p style="font-size: 1.5rem; color: white;">The garden is now complete.</p>
+    </div>
+
+    <script>
+        // --- 1. PARTICLE SYSTEM (THE GARDEN) ---
+        const canvas = document.getElementById('garden-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 3 + 1;
+                this.speedX = Math.random() * 1 - 0.5;
+                this.speedY = Math.random() * 1 - 0.5;
+                this.color = `rgba(255, ${Math.floor(Math.random() * 100)}, 100, ${Math.random() * 0.5})`;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.size > 0.2) this.size -= 0.01; 
+                if (this.size <= 0.2) {
+                    this.x = Math.random() * width;
+                    this.y = Math.random() * height;
+                    this.size = Math.random() * 3 + 1;
+                }
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function initParticles() {
+            for (let i = 0; i < 150; i++) {
+                particles.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animate);
+        }
+
+        initParticles();
+        animate();
+
+        // --- 2. INTERACTION LOGIC ---
+
+        // Make the 'No' button run away
+        function moveButton() {
+            const btn = document.getElementById('noBtn');
+            const newX = Math.random() * (window.innerWidth - 200);
+            const newY = Math.random() * (window.innerHeight - 100);
+            
+            btn.style.position = 'fixed';
+            btn.style.left = newX + 'px';
+            btn.style.top = newY + 'px';
+        }
+
+async function handleYes() {
+            // 1. Visual Celebration
+            const overlay = document.getElementById('success-overlay');
+            overlay.style.display = 'flex';
+
+            // 2. Send to Cloud Backend (Formspree)
+            try {
+                // REPLACE THE URL BELOW WITH YOUR FORMSPREE URL
+                const response = await fetch('https://formspree.io/f/mykdyykk', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        person: "Rai", 
+                        answer: "YES! She accepted!", 
+                        timestamp: new Date().toLocaleString() 
+                    })
+                });
+                console.log("Response sent to your email!");
+            } catch (err) {
+                console.log("Could not send email, but she still said yes!");
+            }
+        }
+    </script>
+</body>
+</html>
