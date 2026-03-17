@@ -1,0 +1,60 @@
+import java.util.*;
+
+class ComplexNum {
+    int r, i;
+
+    ComplexNum(int r, int i) {
+        this.r = r;
+        this.i = i;
+    }
+
+    void printComplex() {
+        System.out.println(r + " + " + i + "i");
+    }
+
+    static ComplexNum addComplex(ComplexNum a, ComplexNum b) {
+        return new ComplexNum(a.r + b.r, a.i + b.i);
+    }
+
+    static ComplexNum subComplex(ComplexNum a, ComplexNum b) {
+        return new ComplexNum(a.r - b.r, a.i - b.i);
+    }
+
+    static ComplexNum multComplex(ComplexNum a, ComplexNum b) {
+        int real = a.r * b.r - a.i * b.i;
+        int imag = a.r * b.i + a.i * b.r;
+        return new ComplexNum(real, imag);
+    }
+}
+
+public class ComplexDemo {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        ComplexNum c1 = new ComplexNum(2,3);
+        ComplexNum c2 = new ComplexNum(4,5);
+
+        int ch;
+        do {
+            System.out.println("1.Add 2.Sub 3.Mul 4.Exit");
+            ch = sc.nextInt();
+
+            ComplexNum res;
+
+            switch(ch) {
+                case 1:
+                    res = ComplexNum.addComplex(c1,c2);
+                    res.printComplex();
+                    break;
+                case 2:
+                    res = ComplexNum.subComplex(c1,c2);
+                    res.printComplex();
+                    break;
+                case 3:
+                    res = ComplexNum.multComplex(c1,c2);
+                    res.printComplex();
+                    break;
+            }
+        } while(ch!=4);
+    }
+}
